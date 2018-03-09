@@ -12,14 +12,11 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
-
 import com.example.justinmeskan.justjava.R;
-
 import java.text.NumberFormat;
 
 
@@ -28,19 +25,45 @@ import java.text.NumberFormat;
  */
 public class MainActivity extends AppCompatActivity {
 
+    public final String QUANTITY = "quantity";
+    public final String CHOCOLATE = "chocolate";
+    public final String WHIP = "whip";
+
+    int quantity = 0;
+
+    boolean whip = false;
+    boolean chocolate = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
     }
+    /** saves app data */
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(QUANTITY, quantity);
+        outState.putBoolean(CHOCOLATE, chocolate);
+        outState.putBoolean(WHIP, whip);
+    }
+
+    /** Restores app data on new state */
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        quantity = savedInstanceState.getInt(QUANTITY);
+        chocolate = savedInstanceState.getBoolean(CHOCOLATE);
+        whip = savedInstanceState.getBoolean(WHIP);
+        displayQuantity(quantity);
+        checkChoco(chocolate);
+        checkWhip(whip);
+    }
 
     /**
      * This method is called when the order button is clicked.
      */
-    int quantity = 0;
-    boolean whip = false;
-    boolean chocolate = false;
-    String name = "";
+
     public void submitOrder(View view) {
         displayQuantity(quantity);
         sendEmai(getName(),createOrderSummary(calculatePrice()));
@@ -79,9 +102,17 @@ public class MainActivity extends AppCompatActivity {
         if(intent.resolveActivity(getPackageManager()) != null){
             startActivity(Intent.createChooser(intent, "Send Email"));
         }
-        Log.v("intent flag", "You Device did not have the intended app");
     }
 
+    public void checkWhip(boolean w){
+        CheckBox whipBox = findViewById(R.id.whipped);
+        whipBox.setChecked(w);
+    }
+
+    public void checkChoco(boolean c){
+        CheckBox chocBox = findViewById(R.id.chocolated);
+        chocBox.setChecked(c);
+    }
 
     public void whipCream(View view){
         whip = ((CheckBox) view).isChecked();
